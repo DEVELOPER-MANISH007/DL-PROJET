@@ -33,6 +33,17 @@ if MODEL.output_shape[-1] != len(CLASS_NAMES):
     )
 
 
+@app.get("/")
+async def home():
+    return {
+        "message": "PlantCare AI API is running!",
+        "status": "online",
+        "docs": "/docs",
+        "health_check": "/ping",
+        "prediction_endpoint": "/predict"
+    }
+
+
 @app.get("/ping")
 async def ping():
     return {"message": "hello, I am live"}
