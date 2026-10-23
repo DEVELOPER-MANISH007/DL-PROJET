@@ -14,8 +14,7 @@ import {
   Upload,
 } from "lucide-react";
 
-const API_URL = (import.meta.env.VITE_API_URL || "http://127.0.0.1:8000")
-  .trim()
+const API_URL = (import.meta.env.VITE_API_URL?.trim() || "http://127.0.0.1:8000")
   .replace(/\/+$/, "");
 const SUPPORTED_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp"]);
 const VALID_CLASSES = ["Early Blight", "Late Blight", "Healthy"] as const;

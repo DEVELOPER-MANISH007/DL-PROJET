@@ -1,3 +1,4 @@
+import os
 from io import BytesIO
 from pathlib import Path
 
@@ -8,13 +9,23 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image, UnidentifiedImageError
 
+development_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+production_origins = ["https://dl-projet.vercel.app"]
+configured_origins = [
+    origin.strip().rstrip("/")
+    for origin in os.getenv("CORS_ORIGINS", "").split(",")
+    if origin.strip()
+]
+if "*" in configured_origins:
+    raise ValueError("CORS_ORIGINS must list specific frontend origins, not '*'.")
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=[*development_origins, *production_origins, *configured_origins],
     allow_credentials=False,
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
@@ -79,4 +90,4 @@ async def predict(file: UploadFile = File(...)):
     return {"class": predicted_class, "confidence": confidence}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", "8000")))
